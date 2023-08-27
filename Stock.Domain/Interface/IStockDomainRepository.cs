@@ -12,7 +12,7 @@ namespace Stock.Domain
         Task AddStockAsync(StockDetail stockDetail);
         Task SynAllStockAsync();
         Task AddFinancialReportAsync(string stockCode, FinancialReport financialReport);
-        Task<List<FinancialReport>> CreateFinancialReport(string stockCode);
-        Task<FinancialReport> CreateFinancialReport(string stockCode, DateTime reportDate, DateTime updateTime, DateTime releaseDate, string currency, FinancialReportType financialReportType, FinancialReportPeriod financialReportPeriod, List<Dictionary<string, double?>> detailList);
+        Task SynFinancialReportAsync(string stockCode);
+       
     }
 }

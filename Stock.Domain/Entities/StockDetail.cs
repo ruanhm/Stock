@@ -9,19 +9,19 @@ namespace Stock.Domain
         /// <summary>
         /// 公司全称
         /// </summary>
-        public string Company { get; private set; }
+        public string? Company { get; set; }
         /// <summary>
         /// 上市时间
         /// </summary>
-        public DateTime MarketTime { get; init; }
+        public DateTime MarketTime { get; set; }
         /// <summary>
         /// 总股本
         /// </summary>
-        public double TotalEquity { get; private set; }
+        public double? TotalEquity { get; set; }
         /// <summary>
         /// 流通股
         /// </summary>
-        public double CirculatingEquity { get; private set; }
+        public double? CirculatingEquity { get; set; }
 
       
         private StockDetail() { }
@@ -37,17 +37,11 @@ namespace Stock.Domain
         /// <param name="marketTime">上市时间</param>
         /// <param name="totalEquity">总股本</param>
         /// <param name="circulatingEquity">流通股</param>
-        public StockDetail(string stockCode, string stockName, ExchangeType exchange, string? plate, string industry,string company, DateTime marketTime,float totalEquity,float circulatingEquity)         
+        public StockDetail(string stockCode, string stockName, ExchangeType exchange, DateTime marketTime)         
         {
             this.StockCode = stockCode;
-            ChangeStockName(stockName);
+            this.StockName=stockName;
             this.Exchange = exchange;
-            this.Plate = plate;
-            this.Industry = industry;
-            this.Company = company;
-            this.MarketTime = marketTime;
-            this.TotalEquity = totalEquity;
-            this.CirculatingEquity = circulatingEquity;
 
         }
 

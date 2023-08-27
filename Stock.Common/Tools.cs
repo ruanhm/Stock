@@ -17,7 +17,12 @@ namespace Stock.Common
                 return DateTime.ParseExact(DateStr, Format, System.Globalization.CultureInfo.CurrentCulture);
             }
         }
-
+        public static double? Str2Double(string? Str)
+        {
+            double d;
+            var rs=double.TryParse(Str, out d);
+            return rs ? d : null;
+        }
         public static T RunPython<T>(Func<dynamic, T> func)
         {
             Runtime.PythonDLL = configs.ReadPythonPath();
@@ -26,6 +31,16 @@ namespace Stock.Common
             {
                 dynamic ak = Py.Import("akshare");
                 return func(ak);
+            }
+        }
+        public static void RunPython(Action<dynamic> action)
+        {
+            Runtime.PythonDLL = configs.ReadPythonPath();
+            PythonEngine.Initialize();
+            using (Py.GIL())
+            {
+                dynamic ak = Py.Import("akshare");
+                action(ak);
             }
         }
     }

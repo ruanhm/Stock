@@ -17,122 +17,122 @@ namespace Stock.Domain
         /// <summary>
         /// 股票名字
         /// </summary>
-        public string StockName { get; private set; }
+        public string StockName { get; set; }
 
         /// <summary>
         /// 交易所
         /// </summary>
-        public ExchangeType Exchange { get; init; }
+        public ExchangeType Exchange { get; set; }
 
         /// <summary>
         /// 板块
         /// </summary>
-        public string? Plate { get; init; }
+        public string? Plate { get; set; }
 
         /// <summary>
         /// 行业
         /// </summary>
-        public string Industry { get; init; }
+        public string? Industry { get; set; }
 
         /// <summary>
         /// 股价
         /// </summary>
-        public double StockPrice { get; set; }
+        public double? StockPrice { get; set; }
 
         /// <summary>
         /// 涨跌幅
         /// </summary>
-        public string ChangeRange { get; set; }
+        public string? ChangeRange { get; set; }
 
         /// <summary>
         /// 涨跌额
         /// </summary>
-        public double ChangeAmount { get; set; }
+        public double? ChangeAmount { get; set; }
 
         /// <summary>
         /// 昨收
         /// </summary>
-        public double ClosedYesterday { get; set; }
+        public double? ClosedYesterday { get; set; }
 
         /// <summary>
         /// 今开
         /// </summary>
-        public double TodayOpening { get; set; }
+        public double? TodayOpening { get; set; }
 
         /// <summary>
         /// 最高
         /// </summary>
-        public double Max { get; set; }
+        public double? Max { get; set; }
 
         /// <summary>
         /// 最低
         /// </summary>
-        public double Min { get; set; }
+        public double? Min { get; set; }
 
         /// <summary>
         /// 成交量
         /// </summary>
-        public string Turnover { get; set; }
+        public string? Turnover { get; set; }
 
         /// <summary>
         /// 成交额
         /// </summary>
-        public double TransactionVolume { get; set; }
+        public double? TransactionVolume { get; set; }
 
         /// <summary>
         /// 振幅
         /// </summary>
-        public string Amplitude { get; set; }
+        public string? Amplitude { get; set; }
 
         /// <summary>
         /// 量比
         /// </summary>
-        public string EquivalentRatio { get; set; }
+        public string? EquivalentRatio { get; set; }
 
         /// <summary>
         /// 换手率
         /// </summary>
-        public string TurnoverRate { get; set; }
+        public string? TurnoverRate { get; set; }
 
         /// <summary>
         /// 动态市盈率
         /// </summary>
-        public string ForwardPE { get; set; }
+        public string? ForwardPE { get; set; }
 
         /// <summary>
         /// 市净率
         /// </summary>
-        public string PB { get; set; }
+        public string? PB { get; set; }
 
         /// <summary>
         /// 总市值
         /// </summary>
-        public double MarketCap { get; set; }
+        public double? MarketCap { get; set; }
 
         /// <summary>
         /// 流通市值
         /// </summary>
-        public double CirculationMarketValue { get; set; }
+        public double? CirculationMarketValue { get; set; }
 
         /// <summary>
         /// 涨速
         /// </summary>
-        public string SpeedUp { get; set; }
+        public string? SpeedUp { get; set; }
 
         /// <summary>
         /// 5分钟涨跌
         /// </summary>
-        public string FiveMinute { get; set; }
+        public string? FiveMinute { get; set; }
 
         /// <summary>
         /// 60日涨跌幅
         /// </summary>
-        public string SixtyDays { get; set; }
+        public string? SixtyDays { get; set; }
 
         /// <summary>
         /// 年初至今涨跌幅	
         /// </summary>
-        public string Year2Date { get; set; }
+        public string? Year2Date { get; set; }
 
         //private Stock() { }
         /// <summary>
@@ -152,9 +152,9 @@ namespace Stock.Domain
         //    this.Industry = industry;
         //}
 
-        public void ChangeStockName(string stockName)
-        {
-            this.StockName = stockName;
-        }
+        //public void ChangeStockName(string stockName)
+        //{
+        //    this.StockName = stockName;
+        //}
     }
 }
