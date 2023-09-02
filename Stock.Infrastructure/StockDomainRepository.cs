@@ -103,10 +103,30 @@ namespace Stock.Infrastructure
             var stock = await stockDbContext.StockDetails.SingleOrDefaultAsync(e => e.StockCode == stockCode);
             if (stock != null)
             {
-                stock =await Task.Run(() =>
+                await Task.Run(() =>
                 {
-                    
-                    return stock;
+                    Tools.RunPython(ak =>
+                    {
+                        string data = "";
+                        switch (stock.Exchange)
+                        {
+                            case ExchangeType.SH:
+                                data = ak.stock_sh_a_spot_em().to_json(force_ascii: false, orient: "records");
+                                break;
+                            case ExchangeType.SZ:
+                                data = ak.stock_sz_a_spot_em().to_json(force_ascii: false, orient: "records");
+                                break;
+                            case ExchangeType.BJ:
+                                data = ak.stock_bj_a_spot_em().to_json(force_ascii: false, orient: "records");
+                                break;
+                        }   
+                        var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
+                        var s = b.FirstOrDefault(e => e["代码"] == stock.StockCode);
+                        if (s != null)
+                        {
+                            UpdateStockInfo(stock, s);
+                        }
+                    });
                 });
             }
             return stock;
@@ -122,12 +142,36 @@ namespace Stock.Infrastructure
            
         }
 
-        public Task<List<StockList>> GetStockListAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20)
+        public async Task<List<StockList>> GetStockListAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20)
         {
-            return stockDbContext.StockLists.Where(e =>
+            var list=await stockDbContext.StockLists.Where(e =>
                 (string.IsNullOrEmpty(stockCode) || e.StockCode == stockCode)
                 && (string.IsNullOrEmpty(stockName) || e.StockName == stockName)
                  ).Skip(page).Take(pagesize).ToListAsync();
+            if (list != null && list.Count > 0)
+            {
+                await Task.Run(() =>
+                {
+                    var list1=Tools.RunPython(ak =>
+                    {
+                        string data =  ak.stock_zh_a_spot_em().to_json(force_ascii: false, orient: "records");
+                        var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
+                        return b;
+                    });
+                    if (list1 != null)
+                    {
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            var s = list1.FirstOrDefault(e => e["代码"] == list[i].StockCode);
+                            if (s != null)
+                            {
+                                UpdateStockInfo(list[i], s);
+                            }
+                        }
+                    }
+                });
+            }
+            return list;
         }
 
         public Task<int> GetStockListCountAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20)
@@ -221,6 +265,32 @@ namespace Stock.Infrastructure
                 stockDbContext.SaveChangesAsync();
             });
         }
+
+        private void UpdateStockInfo(Stock.Domain.Stock stock,Dictionary<string,string> s)
+        {
+            stock.StockPrice = Tools.Str2Double(s["最新价"]);
+            stock.ChangeRange = new BandUnit(Tools.Str2Double(s["涨跌幅"]), "手");
+            stock.ChangeAmount = Tools.Str2Double(s["涨跌额"]);
+            stock.Turnover = new BandUnit(Tools.Str2Double(s["成交量"]), "手");
+            stock.TransactionVolume = Tools.Str2Double(s["成交额"]);
+            stock.Amplitude = new BandUnit(Tools.Str2Double(s["振幅"]), "%");
+            stock.Max = Tools.Str2Double(s["最高"]);
+            stock.Min = Tools.Str2Double(s["最低"]);
+            stock.TodayOpening = Tools.Str2Double(s["今开"]);
+            stock.ClosedYesterday = Tools.Str2Double(s["昨收"]);
+            stock.EquivalentRatio = Tools.Str2Double(s["量比"]);
+            stock.TurnoverRate = new BandUnit(Tools.Str2Double(s["换手率"]), "%");
+            stock.ForwardPE = Tools.Str2Double(s["市盈率-动态"]);
+            stock.PB = Tools.Str2Double(s["市净率"]);
+            stock.MarketCap = Tools.Str2Double(s["总市值"]);
+            stock.CirculationMarketValue = Tools.Str2Double(s["流通市值"]);
+            stock.SpeedUp = Tools.Str2Double(s["涨速"]);
+            stock.FiveMinute = new BandUnit(Tools.Str2Double(s["5分钟涨跌"]), "%");
+            stock.SixtyDays = new BandUnit(Tools.Str2Double(s["60日涨跌幅"]), "%");
+            stock.Year2Date = new BandUnit(Tools.Str2Double(s["年初至今涨跌幅"]), "%");
+        }
+
+
         private async Task AddOrUpdateStockAsync(string StockCode,string StockName,string MarketTime, ExchangeType Exchange,string? Plate,string? Industry, string? TotalEquity,string? CirculatingEquity,string? Company)
         {
             var s = await FindOneStockDetailAsync(StockCode);

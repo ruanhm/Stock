@@ -42,7 +42,7 @@ namespace Stock.Domain
         /// <summary>
         /// 涨跌幅
         /// </summary>
-        public string? ChangeRange { get; set; }
+        public BandUnit? ChangeRange { get; set; }
 
         /// <summary>
         /// 涨跌额
@@ -72,7 +72,7 @@ namespace Stock.Domain
         /// <summary>
         /// 成交量
         /// </summary>
-        public string? Turnover { get; set; }
+        public BandUnit? Turnover { get; set; }
 
         /// <summary>
         /// 成交额
@@ -82,27 +82,27 @@ namespace Stock.Domain
         /// <summary>
         /// 振幅
         /// </summary>
-        public string? Amplitude { get; set; }
+        public BandUnit? Amplitude { get; set; }
 
         /// <summary>
         /// 量比
         /// </summary>
-        public string? EquivalentRatio { get; set; }
+        public double? EquivalentRatio { get; set; }
 
         /// <summary>
         /// 换手率
         /// </summary>
-        public string? TurnoverRate { get; set; }
+        public BandUnit? TurnoverRate { get; set; }
 
         /// <summary>
         /// 动态市盈率
         /// </summary>
-        public string? ForwardPE { get; set; }
+        public double? ForwardPE { get; set; }
 
         /// <summary>
         /// 市净率
         /// </summary>
-        public string? PB { get; set; }
+        public double? PB { get; set; }
 
         /// <summary>
         /// 总市值
@@ -117,22 +117,22 @@ namespace Stock.Domain
         /// <summary>
         /// 涨速
         /// </summary>
-        public string? SpeedUp { get; set; }
+        public double? SpeedUp { get; set; }
 
         /// <summary>
         /// 5分钟涨跌
         /// </summary>
-        public string? FiveMinute { get; set; }
+        public BandUnit? FiveMinute { get; set; }
 
         /// <summary>
         /// 60日涨跌幅
         /// </summary>
-        public string? SixtyDays { get; set; }
+        public BandUnit? SixtyDays { get; set; }
 
         /// <summary>
         /// 年初至今涨跌幅	
         /// </summary>
-        public string? Year2Date { get; set; }
+        public BandUnit? Year2Date { get; set; }
 
         //private Stock() { }
         /// <summary>
