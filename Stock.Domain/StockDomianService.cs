@@ -13,5 +13,7 @@ namespace Stock.Domain
         { 
             _repository = stockDomainRepository;
         }
+
+        public 
     }
 }

@@ -36,10 +36,6 @@ namespace Stock.Infrastructure
             }
         }
 
-        public Task<FinancialReport> CreateFinancialReport(string stockCode, DateTime reportDate, DateTime updateTime, string currency, FinancialReportType financialReportType, FinancialReportPeriod financialReportPeriod, List<Dictionary<string, double?>> detailList)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task SynFinancialReportAsync(string stockCode)
         {
