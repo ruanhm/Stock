@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Stock.Infrastructure
 {
-    public class StockListConfig : IEntityTypeConfiguration<StockList>
+    public class StockListConfig : IEntityTypeConfiguration<StockListInfo>
     {
-        public void Configure(EntityTypeBuilder<StockList> builder)
+        public void Configure(EntityTypeBuilder<StockListInfo> builder)
         {
             builder.ToTable("tStock");
             builder.HasKey(e => e.StockCode);

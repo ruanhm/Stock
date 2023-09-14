@@ -6,7 +6,7 @@ namespace Stock.Infrastructure
     public class StockDbContext:DbContext
     {
         public DbSet<StockDetail> StockDetails  { get; private set; }
-        public DbSet<StockList> StockLists { get; private set; }
+        public DbSet<StockListInfo> StockLists { get; private set; }
         public DbSet<FinancialReport> FinancialReports { get; private set; }
 
         //public StockDbContext(DbContextOptions<StockDbContext> options)

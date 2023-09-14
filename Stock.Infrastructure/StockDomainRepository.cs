@@ -20,7 +20,7 @@ namespace Stock.Infrastructure
 
         public async Task AddFinancialReportAsync(string stockCode, FinancialReport financialReport)
         {
-            var r = await FindOneFinancialReportAsync(stockCode, financialReport.FinancialReportType, financialReport.FinancialReportPeriod);
+            var r = await FindOneFinancialReportAsync(stockCode,financialReport.ReportDate ,financialReport.FinancialReportType, financialReport.FinancialReportPeriod);
             if (r == null)
             {
                 stockDbContext.FinancialReports.Add(financialReport);
@@ -89,9 +89,9 @@ namespace Stock.Infrastructure
             return stockDbContext.FinancialReports.SingleOrDefaultAsync(e => e.StockCode == stockCode && e.ReportID == reportID);
         }
 
-        public Task<FinancialReport?> FindOneFinancialReportAsync(string stockCode, FinancialReportType? financialReportType, FinancialReportPeriod? financialReportPeriod)
+        public Task<FinancialReport?> FindOneFinancialReportAsync(string stockCode,DateTime reportDate, FinancialReportType? financialReportType, FinancialReportPeriod? financialReportPeriod)
         {
-            return stockDbContext.FinancialReports.SingleOrDefaultAsync(e => e.StockCode == stockCode && e.FinancialReportType == financialReportType && e.FinancialReportPeriod == financialReportPeriod);
+            return stockDbContext.FinancialReports.SingleOrDefaultAsync(e => e.StockCode == stockCode && e.FinancialReportType == financialReportType && e.FinancialReportPeriod == financialReportPeriod&&e.ReportDate==reportDate);
         }
 
         public async Task<StockDetail?> FindOneStockDetailAsync(string stockCode)
@@ -138,7 +138,7 @@ namespace Stock.Infrastructure
            
         }
 
-        public async Task<List<StockList>> GetStockListAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20)
+        public async Task<List<StockListInfo>> GetStockListAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20)
         {
             var list=await stockDbContext.StockLists.Where(e =>
                 (string.IsNullOrEmpty(stockCode) || e.StockCode == stockCode)

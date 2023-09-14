@@ -1,32 +1,28 @@
-﻿using Stock.Domain.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stock.Domain
+namespace Stock.Domain.Entities
 {
-    public class StockList:Stock
+    public class StockList
     {
-        private StockList() { }
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        /// <param name="stockCode">股票代码</param>
-        /// <param name="stockName">股票名字</param>
-        /// <param name="exchange">交易所</param>
-        /// <param name="plate">板块</param>
-        /// <param name="industry">行业</param>
-        public StockList(string stockCode, string stockName, ExchangeType exchange, string plate, string industry)
-        {
-            
-            this.StockCode = stockCode;
-            ChangeStockName(stockName);
-            this.Exchange = exchange;
-            this.Plate = plate;
-            this.Industry = industry;
+        public List<StockListInfo> StockListData { get; init; }
+        public int BeginIndex { get; init; }
+        public int EndIndex { get; init; }
+        public int PageIndex { get; init; }
+        public int PageSize { get; init; }
+        public int TotalRows { get; init; }
 
+        public StockList(List<StockListInfo> stockListInfos,int benginIndex,int endIndex,int pageIndex,int pageSize,int totalRows)
+        {
+            this.StockListData = stockListInfos;
+            this.BeginIndex = benginIndex;
+            this.EndIndex = endIndex;   
+            this.PageIndex = pageIndex;
+            this.PageSize = pageSize;
+            this.TotalRows = totalRows;
         }
     }
 }

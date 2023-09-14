@@ -21,7 +21,7 @@ namespace Stock.Infrastructure
             builder.Property(e => e.Plate).HasColumnName("Plate").HasMaxLength(100);
             builder.Property(e => e.Industry).HasColumnName("Industry").HasMaxLength(200);
             builder.Property(e => e.StockCode).HasColumnName("StockCode").HasMaxLength(50);
-            builder.HasOne<StockList>().WithOne().HasForeignKey<StockDetail>(e => e.StockCode);
+            builder.HasOne<StockListInfo>().WithOne().HasForeignKey<StockDetail>(e => e.StockCode);
         }
         
     }
