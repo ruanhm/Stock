@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using NLog.Web;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Stock.WebAPI.Model;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,6 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+{
+    builder.RegisterModule<AutofacModule>();
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

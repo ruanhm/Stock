@@ -40,6 +40,9 @@ namespace Stock.Infrastructure.Migrations
                     b.Property<int>("FinancialReportType")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("ReportDate")
                         .HasColumnType("datetime2");
 
@@ -87,22 +90,19 @@ namespace Stock.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("StockCode");
 
-                    b.Property<double>("CirculatingEquity")
+                    b.Property<double?>("CirculatingEquity")
                         .HasColumnType("float");
 
                     b.Property<string>("Company")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Exchange")
-                        .IsRequired()
+                    b.Property<int>("Exchange")
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("int")
                         .HasColumnName("Exchange");
 
                     b.Property<string>("Industry")
-                        .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)")
@@ -112,7 +112,6 @@ namespace Stock.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Plate")
-                        .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
@@ -125,7 +124,7 @@ namespace Stock.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("StockName");
 
-                    b.Property<double>("TotalEquity")
+                    b.Property<double?>("TotalEquity")
                         .HasColumnType("float");
 
                     b.HasKey("StockCode");
@@ -133,29 +132,26 @@ namespace Stock.Infrastructure.Migrations
                     b.ToTable("tStock", (string)null);
                 });
 
-            modelBuilder.Entity("Stock.Domain.StockList", b =>
+            modelBuilder.Entity("Stock.Domain.StockListInfo", b =>
                 {
                     b.Property<string>("StockCode")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("StockCode");
 
-                    b.Property<string>("Exchange")
-                        .IsRequired()
+                    b.Property<int>("Exchange")
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("int")
                         .HasColumnName("Exchange");
 
                     b.Property<string>("Industry")
-                        .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("Industry");
 
                     b.Property<string>("Plate")
-                        .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
@@ -186,7 +182,7 @@ namespace Stock.Infrastructure.Migrations
 
             modelBuilder.Entity("Stock.Domain.StockDetail", b =>
                 {
-                    b.HasOne("Stock.Domain.StockList", null)
+                    b.HasOne("Stock.Domain.StockListInfo", null)
                         .WithOne()
                         .HasForeignKey("Stock.Domain.StockDetail", "StockCode")
                         .OnDelete(DeleteBehavior.Cascade)

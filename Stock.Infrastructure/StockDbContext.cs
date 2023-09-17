@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Stock.Common;
 using Stock.Domain;
 
 namespace Stock.Infrastructure
@@ -9,13 +10,18 @@ namespace Stock.Infrastructure
         public DbSet<StockListInfo> StockLists { get; private set; }
         public DbSet<FinancialReport> FinancialReports { get; private set; }
 
+        //private readonly IConfigService configService;
         //public StockDbContext(DbContextOptions<StockDbContext> options)
         //    : base(options)
         //{
         //}
+        //public StockDbContext(IConfigService configService)
+        //{
+        //    this.configService= configService;
+        //}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string connStr = "Data Source=127.0.0.1;Initial Catalog=Stock; User Id=sa;Password=123456;TrustServerCertificate=true";
+            string connStr = "Data Source=.;Initial Catalog=Stock; User Id=sa;Password=123456;TrustServerCertificate=true";
             optionsBuilder.UseSqlServer(connStr);
         }
 

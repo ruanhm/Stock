@@ -1,7 +1,9 @@
 ﻿
+using Stock.Common;
+
 namespace Stock.Domain
 {
-    public interface IStockDomainRepository
+    public interface IStockDomainRepository: IScopeDenpendency
     {
         Task<List<StockListInfo>> GetStockListAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20);
         Task<int> GetStockListCountAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20);

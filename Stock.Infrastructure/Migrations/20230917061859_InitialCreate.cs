@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Stock.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,7 @@ namespace Stock.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StockCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReportDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FinancialReportType = table.Column<int>(type: "int", nullable: false),
@@ -39,9 +40,9 @@ namespace Stock.Infrastructure.Migrations
                     TotalEquity = table.Column<double>(type: "float", nullable: true),
                     CirculatingEquity = table.Column<double>(type: "float", nullable: true),
                     StockName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Exchange = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Plate = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Industry = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    Exchange = table.Column<int>(type: "int", maxLength: 100, nullable: false),
+                    Plate = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Industry = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {

@@ -1,4 +1,5 @@
-﻿using Stock.Domain.Entities;
+﻿using Stock.Common;
+using Stock.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Stock.Domain
 {
-    public class StockDomianService
+    public class StockDomianService: IScopeDenpendency
     {
         private readonly IStockDomainRepository _repository;
         public StockDomianService(IStockDomainRepository stockDomainRepository)
