@@ -2,7 +2,7 @@
 namespace Stock.Common
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class PropertyInjectionAttribute:Attribute
+    public class AutowiredPropertyAttribute : Attribute
     {
     }
 }

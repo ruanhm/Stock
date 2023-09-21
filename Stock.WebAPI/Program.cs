@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Hosting;
 using NLog.Web;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Stock.WebAPI.Model;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Stock.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +17,14 @@ builder.Services.AddSwaggerGen();
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
 builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
 {
     builder.RegisterModule<AutofacModule>();
 });
+builder.Services.AddHostedServices();
 var app = builder.Build();
-
+IocManager.InitContainer(app.Services.GetAutofacRoot());
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -4,8 +4,7 @@ namespace Stock.Common
 {
     public static class Tools
     {
-        [PropertyInjection]
-        public static IConfigService configs { get; set; }
+        private static IConfigService configs { get; set; } = IocManager.Resolve<IConfigService>();
         public static DateTime DateStr2DateTime(string DateStr,string Format="")
         {
             if (string.IsNullOrEmpty(Format))
