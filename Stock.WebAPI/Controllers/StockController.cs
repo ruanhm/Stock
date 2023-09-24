@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Stock.Common;
 using Stock.Domain;
 using Stock.Domain.Entities;
 using Stock.WebAPI.Model;
@@ -29,6 +30,20 @@ namespace Stock.WebAPI.Controllers
         {
             return await stockDomianService.GetFinancialReportListAsync(req.StockCode,req.BeginReportDate,req.EndReportDate,req.FinancialReportType,req.FinancialReportPeriod);
         }
-
+        [HttpGet]
+        public async Task<IActionResult> SynAllStockAsync()
+        {
+            var isOk = true;
+            try
+            {
+                await stockDomianService.SynAllStockAsync();
+            }
+            catch (Exception ex)
+            {
+                isOk = false;
+                LogHelper.Error(ex);
+            }
+            return isOk?Ok("成功"):BadRequest();
+        }
     }
 }

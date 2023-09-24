@@ -40,5 +40,10 @@ namespace Stock.Domain
             }
             return await _repository.GetFinancialReportListAsync(stockCode, (DateTime)beginReportDate, (DateTime)endReportDate,financialReportType,financialReportPeriod);
         }
+
+        public async Task SynAllStockAsync()
+        {
+            await _repository.SynAllStockAsync();
+        }
     }
 }

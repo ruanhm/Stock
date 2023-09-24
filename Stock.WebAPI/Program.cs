@@ -5,6 +5,7 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Stock.Common;
+using Stock.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +19,15 @@ builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
+builder.Services.AddOptions().Configure<Configs>(e => { builder.Configuration.GetSection("Config").Bind(e); });
 builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
 {
     builder.RegisterModule<AutofacModule>();
+    //builder.RegisterType<StockDomainRepository>().As<IStockDomainRepository>().InstancePerLifetimeScope();
+    //builder.RegisterType<ConfigService>().As<IConfigService>().SingleInstance();
 });
-builder.Services.AddHostedServices();
+builder.Services.AddDbContext<StockDbContext>();
+//builder.Services.AddHostedServices();
 var app = builder.Build();
 IocManager.InitContainer(app.Services.GetAutofacRoot());
 // Configure the HTTP request pipeline.

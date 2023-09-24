@@ -21,12 +21,12 @@ namespace Stock.Domain
                 try
                 {
                     await _repository.SynAllStockAsync();
-                    await Task.Delay(1000*60*60);
+                    await Task.Delay(1000);
                 }
                 catch (Exception ex)
                 {
                     LogHelper.Error(ex.Message, ex);
-                    await Task.Delay(1000);
+                    await Task.Delay(60*60*1000);
                 }
             }
         }

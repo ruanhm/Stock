@@ -12,7 +12,7 @@ namespace Stock.Common
 
         private static Logger GetLogger(string logName)
         {
-
+            logName = logName.Replace("<","").Replace(">","");
             return LogManager.GetLogger(Prefix + logName);
         }
 

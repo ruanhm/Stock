@@ -42,6 +42,7 @@ namespace Stock.Domain
             this.StockCode = stockCode;
             this.StockName=stockName;
             this.Exchange = exchange;
+            this.MarketTime = marketTime;
 
         }
 

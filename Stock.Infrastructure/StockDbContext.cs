@@ -7,7 +7,7 @@ namespace Stock.Infrastructure
     public class StockDbContext:DbContext
     {
         public DbSet<StockDetail> StockDetails  { get; private set; }
-        public DbSet<StockListInfo> StockLists { get; private set; }
+        public DbSet<StockListInfo> StockListInfos { get; private set; }
         public DbSet<FinancialReport> FinancialReports { get; private set; }
 
         //private readonly IConfigService configService;
@@ -23,6 +23,7 @@ namespace Stock.Infrastructure
         {
             string connStr = "Data Source=.;Initial Catalog=Stock; User Id=sa;Password=123456;TrustServerCertificate=true";
             optionsBuilder.UseSqlServer(connStr);
+            optionsBuilder.LogTo(Console.WriteLine);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

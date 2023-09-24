@@ -7,15 +7,21 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.VisualBasic;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System;
+using Python.Runtime;
 
 namespace Stock.Infrastructure
 {
     public class StockDomainRepository : IStockDomainRepository
     {
         private readonly StockDbContext stockDbContext;
-        public StockDomainRepository(StockDbContext stockDbContext)
+        private List<StockDetail> stockDetails;
+        private readonly IConfigService configs;
+        public StockDomainRepository(StockDbContext stockDbContext, IConfigService configs)
         {
             this.stockDbContext = stockDbContext;
+            this.configs = configs;
         }
 
         public async Task AddFinancialReportAsync(string stockCode, FinancialReport financialReport)
@@ -41,47 +47,57 @@ namespace Stock.Infrastructure
         {
             return Task.Run(async () =>
             {
-                var list = Tools.RunPython(ak =>
-                {
-                    var list = new List<List<Dictionary<string, string>>>();
-                    string[] arr = new string[] { "资产负债表", "利润表", "现金流量表" };
-                    foreach (var a in arr)
-                    {
-                        string data = ak.stock_financial_report_sina(stock: stockCode, symbol: a).to_json(force_ascii: false, orient: "records");
-                        var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
-                        list.Add(b);
-                    }
-                    return list;
-                });
 
-                if (list != null)
+                try
                 {
-                    var rTypeArr = new[] { FinancialReportType.BalanceSheet, FinancialReportType.IncomeStatement, FinancialReportType.CashFlowStatement }; 
-                    for (int i = 0; i < 3; i++)
+
+                    var list = await Tools.RunPythonAsync(ak =>
                     {
-                        for (int j = 0; j < list[i].Count; j++)
+                        var list = new List<List<Dictionary<string, string>>>();
+                        string[] arr = new string[] { "资产负债表", "利润表", "现金流量表" };
+                        foreach (var a in arr)
                         {
-                            var dic = list[i][j];
-                            DateTime reportDate = Tools.DateStr2DateTime(dic["报告日"], "yyyyMMdd");
-                            DateTime releaseDate = Tools.DateStr2DateTime(dic["公告日期"], "yyyyMMdd");
-                            DateTime updateTime = Tools.DateStr2DateTime(dic["更新日期"]);
-                            var rType = rTypeArr[i];
-                            var rPeriod = DateConvertFinancialReportPeriod(reportDate);
-                            var r = new FinancialReport(stockCode, reportDate, updateTime, releaseDate, dic["币种"], rType, rPeriod);
-                            string s = "报告日,数据源,定期报告,是否审计,公告日期,更新日期";
-                            foreach (var kvp in list[i][j])
-                            {
-                                if (s.IndexOf(kvp.Key) < 0)
-                                {
-                                    r.AddFinancialReportDetail(kvp.Key, Tools.Str2Double(kvp.Value));
-                                }
-                            }
-                            await AddFinancialReportAsync(stockCode, r);
+                            string data = ak.stock_financial_report_sina(stock: stockCode, symbol: a).to_json(force_ascii: false, orient: "records");
+                            var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
+                            list.Add(b);
                         }
+                        return list;
+                    });
+
+                    if (list != null)
+                    {
+                        var rTypeArr = new[] { FinancialReportType.BalanceSheet, FinancialReportType.IncomeStatement, FinancialReportType.CashFlowStatement };
+                        for (int i = 0; i < 3; i++)
+                        {
+                            for (int j = 0; j < list[i].Count; j++)
+                            {
+                                var dic = list[i][j];
+                                DateTime reportDate = Tools.DateStr2DateTime(dic["报告日"], "yyyyMMdd");
+                                DateTime releaseDate = Tools.DateStr2DateTime(dic["公告日期"], "yyyyMMdd");
+                                DateTime updateTime = Tools.DateStr2DateTime(dic["更新日期"]);
+                                var rType = rTypeArr[i];
+                                var rPeriod = DateConvertFinancialReportPeriod(reportDate);
+                                var r = new FinancialReport(stockCode, reportDate, updateTime, releaseDate, dic["币种"], rType, rPeriod);
+                                string s = "报告日,数据源,定期报告,是否审计,公告日期,更新日期";
+                                foreach (var kvp in list[i][j])
+                                {
+                                    if (s.IndexOf(kvp.Key) < 0)
+                                    {
+                                        r.AddFinancialReportDetail(kvp.Key, Tools.Str2Double(kvp.Value));
+                                    }
+                                }
+                                await AddFinancialReportAsync(stockCode, r);
+                            }
+                        }
+                        await stockDbContext.SaveChangesAsync();
                     }
-                    await stockDbContext.SaveChangesAsync();
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.Error(ex);
                 }
             });
+            
         }
 
         public Task<FinancialReport?> FindOneFinancialReportAsync(string stockCode, long reportID)
@@ -99,9 +115,9 @@ namespace Stock.Infrastructure
             var stock = await stockDbContext.StockDetails.SingleOrDefaultAsync(e => e.StockCode == stockCode);
             if (stock != null)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    Tools.RunPython(ak =>
+                    await Tools.RunPython(ak =>
                     {
                         string data = "";
                         switch (stock.Exchange)
@@ -115,7 +131,7 @@ namespace Stock.Infrastructure
                             case ExchangeType.BJ:
                                 data = ak.stock_bj_a_spot_em().to_json(force_ascii: false, orient: "records");
                                 break;
-                        }   
+                        }
                         var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
                         var s = b.FirstOrDefault(e => e["代码"] == stock.StockCode);
                         if (s != null)
@@ -140,17 +156,17 @@ namespace Stock.Infrastructure
 
         public async Task<List<StockListInfo>> GetStockListAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20)
         {
-            var list=await stockDbContext.StockLists.Where(e =>
+            var list = await stockDbContext.StockListInfos.Where(e =>
                 (string.IsNullOrEmpty(stockCode) || e.StockCode == stockCode)
                 && (string.IsNullOrEmpty(stockName) || e.StockName == stockName)
                  ).Skip(page).Take(pagesize).ToListAsync();
             if (list != null && list.Count > 0)
             {
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    var list1=Tools.RunPython(ak =>
+                    var list1 = await Tools.RunPythonAsync(ak =>
                     {
-                        string data =  ak.stock_zh_a_spot_em().to_json(force_ascii: false, orient: "records");
+                        string data = ak.stock_zh_a_spot_em().to_json(force_ascii: false, orient: "records");
                         var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
                         return b;
                     });
@@ -172,7 +188,7 @@ namespace Stock.Infrastructure
 
         public Task<int> GetStockListCountAsync(string? stockCode, string? stockName, int page = 1, int pagesize = 20)
         {
-            return stockDbContext.StockLists.Where(e =>
+            return stockDbContext.StockListInfos.Where(e =>
                  (string.IsNullOrEmpty(stockCode) || e.StockCode == stockCode)
                  && (string.IsNullOrEmpty(stockName) || e.StockName == stockName)
                   ).Skip(page).Take(pagesize).CountAsync();
@@ -193,73 +209,141 @@ namespace Stock.Infrastructure
                 return r;
             });
         }
-        public Task SynAllStockAsync()
+        public async Task SynAllStockAsync()
         {
-            return Task.Run(() =>
+            try
             {
-                Tools.RunPython(async ak =>
+                if (!PythonEngine.IsInitialized)
                 {
-                    //深证列表
-                    foreach (var a in new [] { "A股列表", "B股列表" })
-                    {
-                        string data = ak.stock_info_sz_name_code(symbol: a).to_json(force_ascii: false, orient: "records");
-                        var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
-                        var prefix = a == "A股列表" ? "A股" : "B股";
-                        if (b != null)
-                        {
-                            for (int i = 0; i < b.Count; i++)
-                            {
-                                await AddOrUpdateStockAsync(b[i][prefix + "代码"], b[i][prefix + "简称"], b[i][prefix + "上市日期"], ExchangeType.SZ,
-                                    b[i]["板块"], b[i]["所属行业"], b[i][prefix + "总股本"], b[i][prefix + "流通股本"],null);
-                            }
-                        }
-                        await Task.Delay(500);
-                    }
-                    //上证列表
-                    foreach (var a in new[] { "主板A股", "主板B股", "科创板" })
-                    {
-                        string data = ak.stock_info_sh_name_code(symbol: a).to_json(force_ascii: false, orient: "records", date_format: "iso");
-                        var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
-                        if (b != null)
-                        {
-                            for (int i = 0; i < b.Count; i++)
-                            {
-                                data=ak.stock_individual_info_em(symbol : b[i]["证券代码"]).to_json(force_ascii: false, orient: "records", date_format: "iso");
-                                var c= JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
-                                string? TotalEquity = null, CirculatingEquity = null, Industry = null;
-                                if (c != null)
-                                {
-                                    for (int j = 0; j < c.Count; j++)
-                                    {
-                                        if (c[j]["item"]== "总市值")
-                                            TotalEquity = c[j]["value"];
-                                        else if (c[j]["item"] == "流通市值")
-                                            CirculatingEquity = c[j]["value"];
-                                        else if (c[j]["item"] == "行业")
-                                            Industry = c[j]["value"];
-                                    }
-                                }
-                                await AddOrUpdateStockAsync(b[i]["证券代码"], b[i]["证券简称"], b[i]["上市日期"],
-                                    ExchangeType.SH, a, Industry, TotalEquity, CirculatingEquity, b[i]["公司全称"]);
-                                await Task.Delay(200);
-                            }
-                        }
-                        await Task.Delay(500);
-                    }
-                    //北证列表
-                    string data1 = ak.stock_info_bj_name_code().to_json(force_ascii: false, orient: "records", date_format: "iso");
-                    var b1 = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data1);
-                    if (b1 != null)
-                    {
-                        for (int i = 0; i < b1.Count; i++)
-                        {
-                            await AddOrUpdateStockAsync(b1[i]["证券代码"], b1[i]["证券简称"], b1[i]["上市日期"], ExchangeType.BJ,
-                                    null, b1[i]["所属行业"], b1[i]["总股本"], b1[i]["流通股本"], null);
-                        }
-                    }
-                });
-                stockDbContext.SaveChangesAsync();
-            });
+
+                    Runtime.PythonDLL = configs.ReadPythonPath();
+                    PythonEngine.DebugGIL = false;
+                    PythonEngine.Initialize();
+                }
+
+                string dataA, dataB;
+                var a = Py.GIL();
+                using (a)
+                {
+                    dynamic ak = Py.Import("akshare");
+                    //dataA = ak.stock_info_sz_name_code(symbol: "A股列表").to_json(force_ascii: false, orient: "records");
+                    //dataB = ak.stock_info_sz_name_code(symbol: "B股列表").to_json(force_ascii: false, orient: "records");
+                    a.Dispose();
+                }
+                //var arr = new[] { dataA, dataB };
+                //var arr = Tools.RunPython(ak =>
+                //{
+                //    string dataA = ak.stock_info_sz_name_code(symbol: "A股列表").to_json(force_ascii: false, orient: "records");
+                //    string dataB = ak.stock_info_sz_name_code(symbol: "B股列表").to_json(force_ascii: false, orient: "records");
+                //    return new[] { dataA, dataB };
+                //});
+                int index = 1;
+                //深证列表
+                //foreach (var a in arr)
+                //{
+                //    //    dynamic d1 = ak.stock_info_sz_name_code(symbol: a);
+                //    //    string data=d1.to_json(force_ascii: false, orient: "records");
+                //    var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(a);
+                //    var prefix = index == 1 ? "A股" : "B股";
+                //    if (b != null)
+                //    {
+                //        for (int i = 0; i < b.Count; i++)
+                //        {
+                //            await AddOrUpdateStockAsync(b[i][prefix + "代码"], b[i][prefix + "简称"], b[i][prefix + "上市日期"], ExchangeType.SZ,
+                //                b[i]["板块"], b[i]["所属行业"], b[i][prefix + "总股本"], b[i][prefix + "流通股本"], null);
+                //        }
+                //    }
+                //    index++;
+                //    await Task.Delay(500);
+                //}
+                //await Tools.RunPython(async ak =>
+                //{
+                //    string dataA = ak.stock_info_sz_name_code(symbol: "A股列表").to_json(force_ascii: false, orient: "records");
+
+                //    string dataB = ak.stock_info_sz_name_code(symbol: "B股列表").to_json(force_ascii: false, orient: "records");
+                //    int index = 1;
+                //    //深证列表
+                //    foreach (var a in new[] { dataA, dataB })
+                //    {
+                //        //    dynamic d1 = ak.stock_info_sz_name_code(symbol: a);
+                //        //    string data=d1.to_json(force_ascii: false, orient: "records");
+                //        var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(a);
+                //        var prefix = index == 1 ? "A股" : "B股";
+                //        if (b != null)
+                //        {
+                //            for (int i = 0; i < b.Count; i++)
+                //            {
+                //                await AddOrUpdateStockAsync(b[i][prefix + "代码"], b[i][prefix + "简称"], b[i][prefix + "上市日期"], ExchangeType.SZ,
+                //                    b[i]["板块"], b[i]["所属行业"], b[i][prefix + "总股本"], b[i][prefix + "流通股本"], null);
+                //            }
+                //        }
+                //        index++;
+                //        await Task.Delay(500);
+                //    }
+                //    return true;
+                //});
+                //await Tools.RunPython(async ak =>
+                //{
+                //    //上证列表
+                //    string dataZA = ak.stock_info_sh_name_code(symbol: "主板A股").to_json(force_ascii: false, orient: "records", date_format: "iso");
+                //    string dataZB = ak.stock_info_sh_name_code(symbol: "主板B股").to_json(force_ascii: false, orient: "records", date_format: "iso");
+                //    string dataKC = ak.stock_info_sh_name_code(symbol: "科创板").to_json(force_ascii: false, orient: "records", date_format: "iso");
+                //    foreach (var a in new[] { dataZA, dataZB, dataKC })
+                //    {
+                //        //string data = ak.stock_info_sh_name_code(symbol: a).to_json(force_ascii: false, orient: "records", date_format: "iso");
+                //        var b = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(a);
+                //        if (b != null)
+                //        {
+                //            for (int i = 0; i < b.Count; i++)
+                //            {
+                //                //data = ak.stock_individual_info_em(symbol: b[i]["证券代码"]).to_json(force_ascii: false, orient: "records", date_format: "iso");
+                //                //var c = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
+                //                string? TotalEquity = null, CirculatingEquity = null, Industry = null;
+                //                //if (c != null)
+                //                //{
+                //                //    for (int j = 0; j < c.Count; j++)
+                //                //    {
+                //                //        if (c[j]["item"] == "总市值")
+                //                //            TotalEquity = c[j]["value"];
+                //                //        else if (c[j]["item"] == "流通市值")
+                //                //            CirculatingEquity = c[j]["value"];
+                //                //        else if (c[j]["item"] == "行业")
+                //                //            Industry = c[j]["value"];
+                //                //    }
+                //                //}
+                //                await AddOrUpdateStockAsync(b[i]["证券代码"], b[i]["证券简称"], b[i]["上市日期"],
+                //                    ExchangeType.SH, a, Industry, TotalEquity, CirculatingEquity, b[i]["公司全称"]);
+                //                //await Task.Delay(200);
+                //            }
+                //        }
+                //        await Task.Delay(500);
+                //    }
+
+                //    return Task.CompletedTask;
+                //});
+                //await Tools.RunPython(async ak =>
+                //{
+                //    //北证列表
+                //    string data1 = ak.stock_info_bj_name_code().to_json(force_ascii: false, orient: "records", date_format: "iso");
+                //    var b1 = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data1);
+                //    if (b1 != null)
+                //    {
+                //        for (int i = 0; i < b1.Count; i++)
+                //        {
+                //            await AddOrUpdateStockAsync(b1[i]["证券代码"], b1[i]["证券简称"], b1[i]["上市日期"], ExchangeType.BJ,
+                //                    null, b1[i]["所属行业"], b1[i]["总股本"], b1[i]["流通股本"], null);
+                //        }
+                //    }
+
+                //    return Task.CompletedTask;
+                //});
+
+                //await stockDbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
         }
 
         private void UpdateStockInfo(Stock.Domain.Stock stock,Dictionary<string,string> s)
@@ -289,8 +373,12 @@ namespace Stock.Infrastructure
 
         private async Task AddOrUpdateStockAsync(string StockCode,string StockName,string MarketTime, ExchangeType Exchange,string? Plate,string? Industry, string? TotalEquity,string? CirculatingEquity,string? Company)
         {
-            var s = await FindOneStockDetailAsync(StockCode);
-            if(s != null)
+            if (stockDetails == null)
+            {
+                stockDetails = await stockDbContext.StockDetails.Where(e=>e.StockCode!="").ToListAsync();
+            }
+            var s = stockDetails.SingleOrDefault(e => e.StockCode == StockCode);
+            if (s != null)
             {
                 s.StockName = StockName;
                 s.MarketTime = Tools.DateStr2DateTime(MarketTime);

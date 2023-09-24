@@ -22,7 +22,7 @@ namespace Stock.Domain
         {
             
             this.StockCode = stockCode;
-            this.StockCode = stockName;
+            this.StockName = stockName;
             this.Exchange = exchange;
             this.Plate = plate;
             this.Industry = industry;
