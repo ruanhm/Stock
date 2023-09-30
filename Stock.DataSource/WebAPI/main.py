@@ -1,16 +1,11 @@
 from fastapi import FastAPI
-import akshare as ak
+import uvicorn
+from routers import router
 
 app=FastAPI()
 
-@app.get('/')
-async def root():
-    return {"msg":"Welcome to my Page"}
+app.include_router(router)
 
-@app.get('/api/stock_info_sh_name_code')
-async def stock_info_sh_name_code(symbol):
-    a=ak.stock_info_sh_name_code(symbol=symbol)
-    return a.to_json(force_ascii=False, orient="records")
 
-if __name__ == '__main__':
-	uvicorn.run(app='main:app', host="127.0.0.1", port=8000, reload=True) 
+if __name__ == "__main__":
+    uvicorn.run(app='main:app', host="127.0.0.1", port=8001, reload=True)

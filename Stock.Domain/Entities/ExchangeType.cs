@@ -8,8 +8,8 @@ namespace Stock.Domain.Entities
 {
     public enum ExchangeType
     {
-        SH,
-        SZ,
-        BJ
+        SH=1,
+        SZ=2,
+        BJ=3
     }
 }

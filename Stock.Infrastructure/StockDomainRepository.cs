@@ -344,6 +344,10 @@ namespace Stock.Infrastructure
             {
                 LogHelper.Error(ex);
             }
+            finally
+            {
+                PythonEngine.Shutdown();
+            }
         }
 
         private void UpdateStockInfo(Stock.Domain.Stock stock,Dictionary<string,string> s)
