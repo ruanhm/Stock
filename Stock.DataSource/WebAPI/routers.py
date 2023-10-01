@@ -17,6 +17,16 @@ async def get_bj_all_stocks():
 
 @router.get('/get_stock_info')
 async def get_stock_info(stock_code):
-     def func():
-          return c.get_stock_info_for_ak(stock_code)
-     return to_json_callbak(func)
+     return to_json_callbak(c.get_stock_info_for_ak,stock_code)
+
+@router.get('/get_all_stock_real_time_quotes')
+async def get_all_stock_real_time_quotes():
+     return to_json_callbak(c.get_all_stock_real_time_quotes_for_ak)
+
+@router.get('/get_stock_real_time_quotes')
+async def get_stock_real_time_quotes(stock_code):
+     return to_json_callbak(c.get_stock_real_time_quotes_for_ak,stock_code)
+
+@router.get('/get_finacial_report')
+async def get_finacial_report(stock_code):
+     return to_json_callbak(c.get_finacial_report_for_ak,stock_code)

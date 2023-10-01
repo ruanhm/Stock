@@ -2,7 +2,6 @@ from datetime import datetime
 from Entities.stock import Stock
 from Entities.exchange_type import ExchangeType
 from Entities.band_unit import BandUnit
-from tools import to_json
 import akshare as ak
 def get_sh_all_stocks_for_ak()->list[Stock]:
     data_sh_zbag= ak.stock_info_sh_name_code(symbol="主板A股")
@@ -83,3 +82,63 @@ def get_stock_info_for_ak(stock_code:str='000001')->Stock:
             MarketTime=market_time
             )
 
+def get_all_stock_real_time_quotes_for_ak()->list[Stock]:
+    data=ak.stock_zh_a_spot_em()
+    list_stocks=[]
+    for index, row in data.iterrows():
+        list_stocks.append(Stock(
+            StockCode=row['代码'],
+            StockName=row['名称'],
+            StockPrice=row['最新价'],
+            ChangeRange=BandUnit(row['涨跌幅'],'手'),
+            ChangeAmount=row['涨跌额'],
+            TransactionVolume=row['成交额'],
+            Turnover=BandUnit(row['成交量'],'手'),
+            Amplitude=BandUnit(row['振幅'],'%'),
+            Max=row['最高'],
+            Min=row['最低'],
+            TodayOpening=row['今开'],
+            ClosedYesterday=row['昨收'],
+            EquivalentRatio=row['量比'],
+            TurnoverRate=BandUnit(row['换手率'],'%'),
+            ForwardPE=row['市盈率-动态'],
+            PB=row['市净率'],
+            MarketCap=row['总市值'],
+            SpeedUp=row['涨速'],
+            CirculationMarketValue=row['流通市值'],
+            FiveMinute=BandUnit(row['5分钟涨跌'],'%'),
+            SixtyDays=BandUnit(row['60日涨跌幅'],'%'),
+            Year2Date=BandUnit(row['年初至今涨跌幅'],'%')
+            ))
+    return list_stocks
+
+def get_stock_real_time_quotes_for_ak(stock_code:str='000001')->Stock:
+    data=ak.stock_zh_a_spot_em()
+    data=data[data['代码'] == stock_code]
+    for index, row in data.iterrows():
+        return Stock(
+            StockCode=row['代码'],
+            StockName=row['名称'],
+            StockPrice=row['最新价'],
+            ChangeRange=BandUnit(row['涨跌幅'],'手'),
+            ChangeAmount=row['涨跌额'],
+            TransactionVolume=row['成交额'],
+            Turnover=BandUnit(row['成交量'],'手'),
+            Amplitude=BandUnit(row['振幅'],'%'),
+            Max=row['最高'],
+            Min=row['最低'],
+            TodayOpening=row['今开'],
+            ClosedYesterday=row['昨收'],
+            EquivalentRatio=row['量比'],
+            TurnoverRate=BandUnit(row['换手率'],'%'),
+            ForwardPE=row['市盈率-动态'],
+            PB=row['市净率'],
+            MarketCap=row['总市值'],
+            SpeedUp=row['涨速'],
+            CirculationMarketValue=row['流通市值'],
+            FiveMinute=BandUnit(row['5分钟涨跌'],'%'),
+            SixtyDays=BandUnit(row['60日涨跌幅'],'%'),
+            Year2Date=BandUnit(row['年初至今涨跌幅'],'%')
+        )
+   
+    

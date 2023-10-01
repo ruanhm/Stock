@@ -14,9 +14,9 @@ def to_json(obj:object)->str:
     return jsonpickle.encode(obj,unpicklable=False)
 
 
-def to_json_callbak(func:Callable):
+def to_json_callbak(func:Callable,*p):
     if callable(func):
-        data=func()
+        data=func(*p)
     if data:
         data=to_json(data)
     return data
