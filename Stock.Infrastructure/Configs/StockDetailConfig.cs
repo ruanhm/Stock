@@ -17,7 +17,7 @@ namespace Stock.Infrastructure
                 .Ignore(e => e.PB).Ignore(e => e.MarketCap).Ignore(e => e.CirculationMarketValue).Ignore(e => e.SpeedUp)
                 .Ignore(e => e.FiveMinute).Ignore(e => e.SixtyDays).Ignore(e => e.Year2Date);
             builder.Property(e => e.StockName).HasColumnName("StockName").HasMaxLength(200).IsRequired();
-            builder.Property(e => e.Exchange).HasColumnName("Exchange").HasMaxLength(100);
+            builder.Property(e => e.Exchange).HasColumnName("Exchange");
             builder.Property(e => e.Plate).HasColumnName("Plate").HasMaxLength(100);
             builder.Property(e => e.Industry).HasColumnName("Industry").HasMaxLength(200);
             builder.Property(e => e.StockCode).HasColumnName("StockCode").HasMaxLength(50);

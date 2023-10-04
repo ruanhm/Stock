@@ -18,12 +18,11 @@ namespace Stock.Domain
         /// <param name="exchange">交易所</param>
         /// <param name="plate">板块</param>
         /// <param name="industry">行业</param>
-        public StockListInfo(string stockCode, string stockName, ExchangeType exchange, string plate, string industry)
+        public StockListInfo(string stockCode, string stockName, string plate, string industry)
         {
             
             this.StockCode = stockCode;
             this.StockName = stockName;
-            this.Exchange = exchange;
             this.Plate = plate;
             this.Industry = industry;
 

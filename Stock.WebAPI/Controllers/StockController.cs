@@ -16,9 +16,9 @@ namespace Stock.WebAPI.Controllers
             this.stockDomianService = stockDomianService;
         }
         [HttpGet]
-        public async Task<StockList> GetStockList(GetStockListRequest req)
+        public async Task<StockList> GetStockList(string? StockCode,string? StockName,int Page,int PageSize)
         {
-            return await stockDomianService.GetStockListAsync(req.StockCode, req.StockName, req.Page, req.PageSize);
+            return await stockDomianService.GetStockListAsync(StockCode, StockName, Page,PageSize);
         }
         [HttpGet]
         public async Task<StockDetail?> GetStockDetail(string StockCode)

@@ -12,5 +12,6 @@ namespace Stock.Common
         public string Oracle { get; set; }
         public string MySql { get; set; }
         public string PythonPath { get; set; }
+        public string DataDataSourceUrl { set; get; }
     }
 }

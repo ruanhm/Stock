@@ -5,5 +5,7 @@ namespace Stock.Common
     {
         public string ReadPythonPath();
         public string ReadSqlServerConnStr();
+
+        public string ReadDataDataSourceUrl();
     }
 }

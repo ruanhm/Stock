@@ -5,7 +5,11 @@ namespace Stock.Domain
 {
      public class StockDetail : Stock,IAggregateRoot
     {
-        
+
+        /// <summary>
+        /// 交易所
+        /// </summary>
+        public ExchangeType Exchange { get; set; }
         /// <summary>
         /// 公司全称
         /// </summary>
@@ -23,7 +27,7 @@ namespace Stock.Domain
         /// </summary>
         public double? CirculatingEquity { get; set; }
 
-      
+
         private StockDetail() { }
         /// <summary>
         /// 初始化
@@ -37,10 +41,10 @@ namespace Stock.Domain
         /// <param name="marketTime">上市时间</param>
         /// <param name="totalEquity">总股本</param>
         /// <param name="circulatingEquity">流通股</param>
-        public StockDetail(string stockCode, string stockName, ExchangeType exchange, DateTime marketTime)         
+        public StockDetail(string stockCode, string stockName, ExchangeType exchange, DateTime marketTime)
         {
             this.StockCode = stockCode;
-            this.StockName=stockName;
+            this.StockName = stockName;
             this.Exchange = exchange;
             this.MarketTime = marketTime;
 

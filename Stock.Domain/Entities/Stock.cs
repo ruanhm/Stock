@@ -20,11 +20,6 @@ namespace Stock.Domain
         public string StockName { get; set; }
 
         /// <summary>
-        /// 交易所
-        /// </summary>
-        public ExchangeType Exchange { get; set; }
-
-        /// <summary>
         /// 板块
         /// </summary>
         public string? Plate { get; set; }

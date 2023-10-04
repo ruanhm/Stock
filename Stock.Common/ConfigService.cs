@@ -8,6 +8,12 @@ namespace Stock.Common
         {
             this.c = c;
         }
+
+        public string ReadDataDataSourceUrl()
+        {
+            return c.Value.DataDataSourceUrl;
+        }
+
         public string ReadPythonPath()
         {
             return c.Value.PythonPath;

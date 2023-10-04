@@ -20,14 +20,13 @@ builder.Host.UseNLog();
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
 builder.Services.AddOptions().Configure<Configs>(e => { builder.Configuration.GetSection("Config").Bind(e); });
+builder.Services.AddHttpClient();
+builder.Services.AddDbContext<StockDbContext>();
+builder.Services.AddHostedServices();
 builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
 {
     builder.RegisterModule<AutofacModule>();
-    //builder.RegisterType<StockDomainRepository>().As<IStockDomainRepository>().InstancePerLifetimeScope();
-    //builder.RegisterType<ConfigService>().As<IConfigService>().SingleInstance();
 });
-builder.Services.AddDbContext<StockDbContext>();
-//builder.Services.AddHostedServices();
 var app = builder.Build();
 IocManager.InitContainer(app.Services.GetAutofacRoot());
 // Configure the HTTP request pipeline.

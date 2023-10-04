@@ -97,8 +97,6 @@ namespace Stock.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Exchange")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(100)
                         .HasColumnType("int")
                         .HasColumnName("Exchange");
 
@@ -109,7 +107,8 @@ namespace Stock.Infrastructure.Migrations
                         .HasColumnName("Industry");
 
                     b.Property<DateTime>("MarketTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("MarketTime");
 
                     b.Property<string>("Plate")
                         .ValueGeneratedOnUpdateSometimes()
@@ -138,12 +137,6 @@ namespace Stock.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("StockCode");
-
-                    b.Property<int>("Exchange")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasMaxLength(100)
-                        .HasColumnType("int")
-                        .HasColumnName("Exchange");
 
                     b.Property<string>("Industry")
                         .ValueGeneratedOnUpdateSometimes()
@@ -180,11 +173,11 @@ namespace Stock.Infrastructure.Migrations
                     b.Navigation("FinancialReport");
                 });
 
-            modelBuilder.Entity("Stock.Domain.StockDetail", b =>
+            modelBuilder.Entity("Stock.Domain.StockListInfo", b =>
                 {
-                    b.HasOne("Stock.Domain.StockListInfo", null)
+                    b.HasOne("Stock.Domain.StockDetail", null)
                         .WithOne()
-                        .HasForeignKey("Stock.Domain.StockDetail", "StockCode")
+                        .HasForeignKey("Stock.Domain.StockListInfo", "StockCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

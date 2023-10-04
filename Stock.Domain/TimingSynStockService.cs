@@ -21,7 +21,7 @@ namespace Stock.Domain
                 try
                 {
                     await _repository.SynAllStockAsync();
-                    await Task.Delay(1000);
+                    await Task.Delay(30*60*1000);
                 }
                 catch (Exception ex)
                 {

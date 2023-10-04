@@ -35,12 +35,12 @@ namespace Stock.Infrastructure.Migrations
                 columns: table => new
                 {
                     StockCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Exchange = table.Column<int>(type: "int", nullable: false),
                     Company = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MarketTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    MarketTime = table.Column<DateTime>(type: "datetime", nullable: false),
                     TotalEquity = table.Column<double>(type: "float", nullable: true),
                     CirculatingEquity = table.Column<double>(type: "float", nullable: true),
                     StockName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Exchange = table.Column<int>(type: "int", maxLength: 100, nullable: false),
                     Plate = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Industry = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
                 },
