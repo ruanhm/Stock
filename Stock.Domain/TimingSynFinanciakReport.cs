@@ -23,7 +23,14 @@ namespace Stock.Domain
                     var stockLists= await _repository.GetStockListAsync(null, null, 1, 99999);
                     for(int i = 0; i < stockLists.Count; i++)
                     {
-                        await _repository.SynFinancialReportAsync(stockLists[i].StockCode);
+                        try
+                        {
+                            await _repository.SynFinancialReportAsync(stockLists[i].StockCode);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogHelper.Error(ex.Message, ex);
+                        }
                     }
                     await Task.Delay(1000 * 60 * 60 * 24);
                 }
