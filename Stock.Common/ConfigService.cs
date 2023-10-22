@@ -19,6 +19,11 @@ namespace Stock.Common
             return c.Value.PythonPath;
         }
 
+        public RabbitMQ ReadRabbitMQConfig()
+        {
+            return c.Value.RabbitMQ;
+        }
+
         public string ReadSqlServerConnStr()
         {
             return c.Value.SQLServer;

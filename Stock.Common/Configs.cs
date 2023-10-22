@@ -13,5 +13,6 @@ namespace Stock.Common
         public string MySql { get; set; }
         public string PythonPath { get; set; }
         public string DataDataSourceUrl { set; get; }
+        public RabbitMQ RabbitMQ { set; get; }
     }
 }

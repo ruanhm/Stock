@@ -38,29 +38,28 @@ namespace Stock.Infrastructure
         }
 
 
-        public Task SynFinancialReportAsync(string stockCode)
+        public async Task SynFinancialReportAsync(string stockCode)
         {
-            return Task.Run(async () =>
+            try
             {
-
-                try
+                var list = await Tools.SendGetRequestAsync<List<FinancialReport>>(dataUrl + "/get_finacial_report",
+                    new{
+                        stock_code = stockCode,
+                    },func: Tools.ResponseHandler);
+                if (list != null && list.Count > 0)
                 {
-                    var list = await Tools.SendGetRequestAsync<List<FinancialReport>>(dataUrl + "/get_finacial_report",func: Tools.ResponseHandler);
-                    if (list != null && list.Count > 0)
+                    foreach (var r in list)
                     {
-                        foreach (var r in list)
-                        {
-                            await AddFinancialReportAsync(stockCode, r);
-                        }
-                        
-                        await stockDbContext.SaveChangesAsync();
+                        await AddFinancialReportAsync(stockCode, r);
                     }
+                        
+                    await stockDbContext.SaveChangesAsync();
                 }
-                catch(Exception ex)
-                {
-                    LogHelper.Error(ex);
-                }
-            });
+            }
+            catch(Exception ex)
+            {
+                LogHelper.Error(ex);
+            }
             
         }
 

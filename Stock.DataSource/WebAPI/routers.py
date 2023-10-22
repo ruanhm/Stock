@@ -49,4 +49,4 @@ async def get_bj_stock_real_time_quotes():
 
 @router.get('/get_finacial_report')
 async def get_finacial_report(stock_code):
-     return to_json_callbak(c.get_finacial_report_for_ak,p=stock_code)
+     return to_json_callbak(c.get_finacial_report_for_ak,True,stock_code)

@@ -21,7 +21,7 @@ namespace Stock.Infrastructure
         //}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string connStr = "Data Source=.;Initial Catalog=Stock; User Id=sa;Password=123456;TrustServerCertificate=true";
+            string connStr = "Data Source=.;Initial Catalog=Stock; User Id=sa;Password=123456@abc;TrustServerCertificate=true";
             optionsBuilder.UseSqlServer(connStr);
             optionsBuilder.LogTo(Console.WriteLine);
         }

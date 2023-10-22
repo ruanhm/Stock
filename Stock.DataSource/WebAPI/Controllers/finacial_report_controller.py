@@ -30,7 +30,7 @@ def get_finacial_report_for_ak(stock_code:str)->list[FinancialReport]:
                     update_date=row['更新日期']
                 elif col=='币种':
                     currency=row['币种']
-                elif '数据源,定期报告,是否审计'.find(col)==-1:
+                elif '数据源,定期报告,是否审计,类型'.find(col)==-1:
                     list_dtl.append(FinancialReportDetail(
                         ItemName=col,
                         ItemValue=nan_convert_null(row[col])
