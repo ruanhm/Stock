@@ -12,9 +12,9 @@ namespace Stock.Domain
     {
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            RabbitMQHelper.Receive((model, ea) =>
+            RabbitMQHelper.Receive((sender,e) =>
             {
-                byte[] message = ea.Body.ToArray(); // 接收到的消息
+                byte[] message = e.Body.ToArray(); // 接收到的消息
 
                 string msg = Encoding.UTF8.GetString(message);
                 Console.WriteLine(msg);

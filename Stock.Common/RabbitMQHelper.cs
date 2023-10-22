@@ -23,7 +23,7 @@ namespace Stock.Common
             };
         }
 
-        public static void Receive(string queueName,string exchangeName,string routeKey, EventHandler<BasicDeliverEventArgs> basicDeliverEventArgs)
+        public static void Receive(string queueName,string exchangeName,string routeKey, EventHandler<BasicDeliverEventArgs> basicDeliverEvent)
         {
             var mqConfig = configs.ReadRabbitMQConfig();
             IConnection conn = GetConnection().CreateConnection();
@@ -41,17 +41,17 @@ namespace Stock.Common
             channel.BasicQos(0, 1, false); // 设置消费者每次只接收一条消息
             //创建消费者对象
             var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += basicDeliverEventArgs;
+            consumer.Received += basicDeliverEvent;
             //消费者开启监听
             channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
                 
             
         }
 
-        public static void Receive(EventHandler<BasicDeliverEventArgs> basicDeliverEventArgs)
+        public static void Receive(EventHandler<BasicDeliverEventArgs> basicDeliverEvent)
         {
             var mqConfig = configs.ReadRabbitMQConfig();
-            Receive(mqConfig.Queue, mqConfig.Exchange, mqConfig.RoutingKey, basicDeliverEventArgs);
+            Receive(mqConfig.Queue, mqConfig.Exchange, mqConfig.RoutingKey, basicDeliverEvent);
         }
     }
 }
