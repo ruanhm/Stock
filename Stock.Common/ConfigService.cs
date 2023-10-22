@@ -19,7 +19,7 @@ namespace Stock.Common
             return c.Value.PythonPath;
         }
 
-        public RabbitMQ ReadRabbitMQConfig()
+        public RabbitMQConfig ReadRabbitMQConfig()
         {
             return c.Value.RabbitMQ;
         }

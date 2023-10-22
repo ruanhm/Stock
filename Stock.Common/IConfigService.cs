@@ -7,6 +7,6 @@ namespace Stock.Common
         public string ReadSqlServerConnStr();
 
         public string ReadDataDataSourceUrl();
-        public RabbitMQ ReadRabbitMQConfig();
+        public RabbitMQConfig ReadRabbitMQConfig();
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Stock.Common
 {
-    public class RabbitMQ
+    public class RabbitMQConfig
     {
         public string Host { get; set; }
         public int Port { get; set; }

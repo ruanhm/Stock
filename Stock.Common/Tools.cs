@@ -168,6 +168,7 @@ namespace Stock.Common
             }
             return JsonConvert.DeserializeObject<T>(res);
         }
+
     }
 
 }
