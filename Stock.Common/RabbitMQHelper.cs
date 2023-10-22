@@ -30,20 +30,20 @@ namespace Stock.Common
 
             IModel channel = conn.CreateModel();
                     //声明一个队列
-                    channel.QueueDeclare(
-                      queue: queueName,//消息队列名称
-                      durable: mqConfig.Durable,//是否缓存
-                      exclusive: false,
-                      autoDelete: false,
-                      arguments: null
-                       );
-                    channel.QueueBind(queueName, exchangeName, routeKey);// 队列绑定给指定的交换机
-                    channel.BasicQos(0, 1, false); // 设置消费者每次只接收一条消息
-                    //创建消费者对象
-                    var consumer = new EventingBasicConsumer(channel);
-                    consumer.Received += basicDeliverEventArgs;
-                    //消费者开启监听
-                    channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
+            channel.QueueDeclare(
+                queue: queueName,//消息队列名称
+                durable: mqConfig.Durable,//是否缓存
+                exclusive: false,
+                autoDelete: false,
+                arguments: null
+                );
+            channel.QueueBind(queueName, exchangeName, routeKey);// 队列绑定给指定的交换机
+            channel.BasicQos(0, 1, false); // 设置消费者每次只接收一条消息
+            //创建消费者对象
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += basicDeliverEventArgs;
+            //消费者开启监听
+            channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
                 
             
         }
