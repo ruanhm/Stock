@@ -15,6 +15,6 @@ namespace Stock.Domain
         Task SynAllStockAsync();
         Task AddFinancialReportAsync(string stockCode, FinancialReport financialReport);
         Task SynFinancialReportAsync(string stockCode);
-       
+        Task PushRealTimeStockInfo();
     }
 }
